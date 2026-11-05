@@ -1,6 +1,38 @@
-# Piecewise exponential cure models under limited follow-up — reproducible code
+# Piecewise Exponential Cure Models under Limited Follow-up
 
-R code reproducing all results of the manuscript *"Piecewise Exponential Cure Models under Limited Follow-up: An Exploratory Reanalysis of ST-Elevation Myocardial Infarction after Primary Percutaneous Coronary Intervention"*.
+R code for parametric cure models (Bernoulli, Poisson and Negative Binomial formulations) with Weibull and piecewise exponential (PE / power PE) baseline distributions, and for a non-cure piecewise exponential proportional hazards comparator.
+
+The code reproduces all results of the study *"Piecewise Exponential Cure Models under Limited Follow-up: An Exploratory Reanalysis of ST-Elevation Myocardial Infarction after Primary Percutaneous Coronary Intervention"* (earlier working title: *"Cure-Model Approaches Using Piecewise Exponential Distributions in STEMI Patients Undergoing Primary PCI"*).
+
+## Authors
+
+- Yolanda M. Gómez (Departamento de Estadística, Universidad del Bío-Bío, Concepción, Chile)
+- Allan Burboa (Departamento de Estadística, Universidad del Bío-Bío, Concepción, Chile)
+
+## Overview
+
+Conventional parametric non-cure survival models (e.g., the Weibull model) assume a proper survival distribution, under which all individuals would eventually experience the event. The Kaplan–Meier estimator and the Cox model do not impose this assumption on the observed data (the Cox baseline hazard is unspecified), but neither includes an explicit parameter for individuals who will never experience the event. Cure models introduce such a non-susceptible fraction; its identification, however, requires a follow-up long enough for the survival curve to reach a plateau. In the STEMI cohort analysed here (30-month follow-up), the cure fraction was weakly identified, and a flexible non-cure PE model fitted better than the cure models.
+
+The repository provides R functions (`R/00_functions.R`) to fit:
+
+- Mixture cure models: Bernoulli formulation (`BerPE`, `BerPPE`, `BerW`).
+- Non-mixture (promotion time) cure models: Poisson (`PoPE`, `PoPPE`, `PoW`) and Negative Binomial (`NBPE`, `NBPPE`, `NBW`).
+- Baseline distributions: Weibull, piecewise exponential (PE) and power piecewise exponential (PPE).
+- Non-cure PE proportional hazards model (`PEPH.est2`), with independent verification by a Poisson GLM (`PEPH.glm`).
+
+Main features:
+
+1. Maximum likelihood estimation on the log scale for positive parameters, with Nelder–Mead followed by BFGS refinement; convergence is checked at each stage, and a solution is accepted only if the observed information matrix is positive definite and the gradient is negligible (< 10⁻³).
+2. Multiple-start verification of the maximum (`multistart.check`).
+3. Standard errors from the observed information matrix (delta method for positive parameters).
+4. Individual cure probabilities and the average cure fraction, with simulation-based and profile-likelihood intervals.
+5. Residual diagnostics: Cox–Snell residuals and randomized quantile residuals.
+
+## Requirements
+
+```r
+install.packages(c("survival", "msm", "pracma", "MASS", "readxl"))
+```
 
 ## Data
 
@@ -9,11 +41,11 @@ R code reproducing all results of the manuscript *"Piecewise Exponential Cure Mo
 ## Software (versions used for the reported results)
 
 - R 4.3.3 (2024-02-29)
-- survival 3.5-8, msm 1.7.1, pracma 2.4.4, numDeriv 2016.8-1.1, MASS 7.3-60, readxl 1.4.3
+- survival 3.5-8, msm 1.7.1, pracma 2.4.4, MASS 7.3-60, readxl 1.4.3
 
-## How to run
+## How to run (reproduction of the manuscript)
 
-Run the scripts from this folder, in order:
+Run the scripts from the repository root, in order (e.g., `Rscript R/01_data_preparation.R`). Pre-computed results are provided in `output/` (CSV files), so that they can be compared without rerunning the long analyses (partition scan and bootstrap).
 
 | Script | Output | Manuscript item |
 |---|---|---|
